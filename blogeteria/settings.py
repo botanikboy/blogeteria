@@ -7,6 +7,10 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+STATIC_DIR = BASE_DIR / 'static_dev'
+
+TEMPLATES_DIR = BASE_DIR / 'templates'
+
 SECRET_KEY = getenv('SECRET_KEY')
 
 DEBUG = True
@@ -39,7 +43,7 @@ ROOT_URLCONF = 'blogeteria.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATES_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -72,7 +76,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.austh.password_validation.NumericPasswordValidator',
     },
 ]
 
@@ -85,5 +89,9 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [
+    STATIC_DIR,
+]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

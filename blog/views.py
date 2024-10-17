@@ -20,7 +20,7 @@ def post_detail(request, pk):
             is_published=True,
             pub_date__lt=timezone.now(),
             category__is_published=True
-        ),
+        ).select_related('location', 'category'),
         pk=pk
     )
     context = {'post': post}
@@ -37,7 +37,7 @@ def category_posts(request, slug):
             is_published=True,
             pub_date__lt=timezone.now(),
             category__is_published=True
-        ),
+        ).select_related('location', 'category'),
         category=category
     )
     context = {'posts': posts, 'category': category}

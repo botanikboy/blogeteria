@@ -9,7 +9,7 @@ User = get_user_model()
 class Category(PublishedModel):
     title = models.CharField(
         max_length=256,
-        verbose_name='Название')
+        verbose_name='Заголовок')
     description = models.TextField(verbose_name='Описание')
     slug = models.SlugField(unique=True)
 
@@ -22,6 +22,7 @@ class Category(PublishedModel):
 class Location(PublishedModel):
     name = models.CharField(
         max_length=256,
+        verbose_name='Название места'
     )
 
     class Meta:
@@ -33,11 +34,13 @@ class Location(PublishedModel):
 class Post(PublishedModel):
     title = models.CharField(
         max_length=256,
-        verbose_name='Пост')
+        verbose_name='Заголовок')
     text = models.TextField(
         verbose_name='Текст')
     pub_date = models.DateTimeField(
-        verbose_name='Дата публикации')
+        verbose_name='Дата публикации',
+        help_text='Если установить дату и время в будущем — можно делать'
+                  ' отложенные публикации.')
     author = models.ForeignKey(
         User,
         verbose_name='Автор',

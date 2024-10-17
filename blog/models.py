@@ -18,6 +18,9 @@ class Category(PublishedModel):
         verbose_name_plural = 'Категории'
         ordering = ('title',)
 
+    def __str__(self) -> str:
+        return self.title
+
 
 class Location(PublishedModel):
     name = models.CharField(
@@ -29,6 +32,9 @@ class Location(PublishedModel):
         verbose_name = 'Географическая метка'
         verbose_name_plural = 'Метки'
         ordering = ('name',)
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Post(PublishedModel):
@@ -60,3 +66,6 @@ class Post(PublishedModel):
         verbose_name = 'Публикация'
         verbose_name_plural = 'Публикации'
         ordering = ('pub_date',)
+
+    def __str__(self) -> str:
+        return f'{self.author}: {self.title}'

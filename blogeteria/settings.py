@@ -5,6 +5,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+AUTH_USER_MODEL = 'users.CustomUser'
+
+CSRF_FAILURE_VIEW = 'core.views.csrf_failure' 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 STATIC_DIR = BASE_DIR / 'static_dev'
@@ -15,9 +19,13 @@ SECRET_KEY = getenv('SECRET_KEY')
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+]
 
 INSTALLED_APPS = [
+    'users.apps.UsersConfig',
     'core.apps.CoreConfig',
     'blog.apps.BlogConfig',
     'pages.apps.PagesConfig',

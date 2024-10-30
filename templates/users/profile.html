@@ -13,9 +13,9 @@ Blogeteria. Профиль пользователя {{ user.username }}
       <li>Дата регистрации: {{ user.date_joined }}</li>
       <li>Имя:{{ user.first_name }} {{ user.last_name }}</li>
     </ul>
-    {% if user.is_authenticated %}
-      <a class="btn btn-outline-primary" href="#">Редактировать профиль</a>
-      <a class="btn btn-outline-primary" href="#">Изменить пароль</a>
+    {% if user.is_authenticated and request.resolver_match.captured_kwargs.username == request.user.username %}
+      <a class="btn btn-outline-primary" href="{% url 'users:profile_edit' request.user.id %}">Редактировать профиль</a>
+      <a class="btn btn-outline-primary" href="{% url 'users:password_change' %}">Изменить пароль</a>
     {% endif %}
   </div>
 </div>

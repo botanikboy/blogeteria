@@ -43,8 +43,8 @@
             </li>
           {% else %}
           <li class="nav-item">
-            <a class="nav-link{% if view_name == 'users:profile' %} active {% endif %}"
-              href="{% url 'users:profile' request.user.username %}">Профиль: <b>{{ user.username }}</b></a>
+            <a class="nav-link{% if 'profile' in view_name and request.user.username in request.resolver_match.captured_kwargs.values %} active {% endif %}"
+              href="{% url 'users:profile' request.user.username %}">Профиль: <b>{{ request.user.username }}</b></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'users:logout' %}">Выйти</a>

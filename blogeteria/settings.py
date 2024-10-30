@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+LOGIN_REDIRECT_URL = 'blog:index'
+
 AUTH_USER_MODEL = 'users.CustomUser'
 
 CSRF_FAILURE_VIEW = 'core.views.csrf_failure' 
@@ -25,6 +27,7 @@ ALLOWED_HOSTS = [
 ]
 
 INSTALLED_APPS = [
+    'django_bootstrap5',
     'users.apps.UsersConfig',
     'core.apps.CoreConfig',
     'blog.apps.BlogConfig',

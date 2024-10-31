@@ -1,6 +1,10 @@
 from django.core.paginator import Paginator
 from django.shortcuts import get_list_or_404, get_object_or_404, render
 from django.utils import timezone
+from django.views.generic import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.forms import DateTimeInput
+from django.urls import reverse_lazy
 
 from .models import Post, Category
 
@@ -54,3 +58,25 @@ def category_posts(request, slug):
         'page_obj': page_obj,
         }
     return render(request, 'blog/category.html', context)
+
+
+class PostCreate(LoginRequiredMixin, CreateView):
+    model = Post
+    fields = [
+        'title',
+        'text',
+        'pub_date',
+        'location',
+        'category',
+        'image',
+    ]
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=None)
+        form.fields['pub_date'].widget = DateTimeInput(
+            attrs={'type': 'datetime-local'})
+        return form
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'users:profile', kwargs={'username': self.request.user.username})

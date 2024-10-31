@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+{% block title %}
+  {% if '/edit' in request.path %}
+  Редактирование записи
+  {% else %}
+  Новая запись
+  {% endif %}
+{% endblock title %}
+{% block content %}
+{% with data=form.instance %}
+  <h2>
+    {% if '/edit' in request.path %}
+      Редактирование записи "{{ data.title }}"
+    {% else %}
+      Новая запись
+    {% endif %}
+  </h2>
+  <div class="card col-8">
+    <div class="card-header">
+      {% if '/edit' in request.path %}
+      Редактирование записи "{{ data.title }}"
+      {% else %}
+        Новая запись
+      {% endif %}
+    </div>
+    <div class="card-body">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% bootstrap_button button_type="submit" content="Сохранить" %}
+      </form>
+    </div>
+  </div>
+  {% if form.is_valid %}
+  <h2>Записть "{{ data.title }}" сохранена</h2>
+  Дата публикации: {{ data.pub_date }}
+  {% endif %}
+{% endwith %}
+{% endblock content %}

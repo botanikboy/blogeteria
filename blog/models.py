@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from datetime import datetime
 
 from core.models import PublishedModel
 
@@ -46,7 +47,9 @@ class Post(PublishedModel):
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации',
         help_text='Если установить дату и время в будущем — можно делать'
-                  ' отложенные публикации.')
+                  ' отложенные публикации.',
+        # default=datetime.now(),
+        )
     author = models.ForeignKey(
         User,
         verbose_name='Автор',

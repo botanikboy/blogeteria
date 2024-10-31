@@ -1,9 +1,9 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from datetime import datetime
+from django.utils.timezone import now
 
 from core.models import PublishedModel
-
+from .validators import date_in_future
 User = get_user_model()
 
 
@@ -48,8 +48,9 @@ class Post(PublishedModel):
         verbose_name='Дата публикации',
         help_text='Если установить дату и время в будущем — можно делать'
                   ' отложенные публикации.',
-        # default=datetime.now(),
-        )
+        default=now,
+        blank=True, null=True,
+        validators=[date_in_future,])
     author = models.ForeignKey(
         User,
         verbose_name='Автор',
@@ -67,7 +68,8 @@ class Post(PublishedModel):
     image = models.ImageField(
         'Картинка',
         upload_to="uploads/%Y/",
-        blank=True
+        blank=True,
+        null=True,
         )
 
     class Meta:
@@ -77,3 +79,8 @@ class Post(PublishedModel):
 
     def __str__(self) -> str:
         return f'{self.author}: {self.title}'
+
+    def save(self, *args, **kwargs):
+        if not self.pub_date:
+            self.pub_date = now()
+        super().save(*args, **kwargs)

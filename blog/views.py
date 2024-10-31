@@ -74,7 +74,10 @@ class PostCreate(LoginRequiredMixin, CreateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class=None)
         form.fields['pub_date'].widget = DateTimeInput(
-            attrs={'type': 'datetime-local'})
+            attrs={
+                'type': 'datetime-local',
+                'style': 'width:200px',
+            })
         return form
 
     def get_success_url(self):

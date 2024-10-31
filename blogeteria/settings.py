@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+USE_L10N = True
+
 LOGIN_REDIRECT_URL = 'blog:index'
 
 AUTH_USER_MODEL = 'users.CustomUser'

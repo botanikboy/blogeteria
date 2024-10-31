@@ -13,6 +13,10 @@ CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+MEDIA_ROOT = BASE_DIR / 'media_dev'
+
+MEDIA_URL = 'media/'
+
 STATIC_DIR = BASE_DIR / 'static_dev'
 
 TEMPLATES_DIR = BASE_DIR / 'templates'

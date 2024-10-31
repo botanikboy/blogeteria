@@ -61,11 +61,16 @@ class Post(PublishedModel):
         verbose_name='Категория',
         null=True,
         on_delete=models.SET_NULL)
+    image = models.ImageField(
+        'Картинка',
+        upload_to="uploads/%Y/",
+        blank=True
+        )
 
     class Meta:
         verbose_name = 'Публикация'
         verbose_name_plural = 'Публикации'
-        ordering = ('pub_date',)
+        ordering = ('-pub_date',)
 
     def __str__(self) -> str:
         return f'{self.author}: {self.title}'

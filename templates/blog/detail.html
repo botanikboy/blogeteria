@@ -16,11 +16,13 @@ Blogeteria. Пост {{ post.date }}
   <p>{{ post.text }}</p>      
   </div> 
   <div class="col-12 col-md-6 mb-3">
-  <img 
-      class="img-fluid" 
-      height="400" width="300"
-      src="{% static 'img/image-holder.png' %}"
-      >      
+  {% if post.image %}
+    <img 
+        class="img-fluid" 
+        height="700" width="700"
+        src="{{ post.image.url }}"
+        >
+  {% endif %}  
   </div>
 </div>     
 {% endblock content %}

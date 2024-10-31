@@ -7,8 +7,9 @@ Blogeteria. Категория {{ category }}
 {% block content %}
 <h1 class="pb-2 mb-0">Публикации в категории - {{ category }}</h1>
 	<div class="row row-cols-1 row-cols-md-3 row-cols-lg-3 g-3">
-		{% for post in posts %}
+		{% for post in page_obj %}
 			{% include "includes/post_card.html" %}
 		{% endfor %}
 	</div>
+	{% include "includes/pagination.html" %}
 {% endblock content %}

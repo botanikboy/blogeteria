@@ -1,13 +1,14 @@
-from django.core.paginator import Paginator
-from django.shortcuts import get_list_or_404, get_object_or_404, render
-from django.utils import timezone
-from django.views.generic import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
 from django.core.exceptions import PermissionDenied
+from django.core.paginator import Paginator
+from django.shortcuts import (get_list_or_404, get_object_or_404, redirect,
+                              render)
+from django.urls import reverse_lazy
+from django.utils import timezone
+from django.views.generic import CreateView, UpdateView
 
 from .forms import PostCreateForm
-from .models import Post, Category
+from .models import Category, Post
 
 
 def index(request):
@@ -71,10 +72,13 @@ def category_posts(request, slug):
     return render(request, 'blog/category.html', context)
 
 
-class PostCreate(LoginRequiredMixin, CreateView):
+class PostMixing():
     model = Post
     form_class = PostCreateForm
     template_name = 'blog/create_post.html'
+
+
+class PostCreate(PostMixing, LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy(
@@ -83,3 +87,22 @@ class PostCreate(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
+
+
+class PostUpdate(PostMixing, LoginRequiredMixin, UpdateView):
+
+    def dispatch(self, request, *args, **kwargs):
+        instance = get_object_or_404(Post, pk=kwargs['pk'])
+        if instance.author != self.request.user:
+            return redirect('blog:post_detail', pk=instance.pk)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse_lazy('blog:post_detail', kwargs={'pk': self.object.pk})
+
+    def get_initial(self):
+        initial = super().get_initial()
+        if self.object.pub_date:
+            initial['pub_date'] = self.object.pub_date.strftime(
+                '%Y-%m-%dT%H:%M')
+        return initial

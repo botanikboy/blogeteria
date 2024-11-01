@@ -9,9 +9,21 @@ Blogeteria. Пост {{ post.date }}
   <div class="col-12 col-md-6">
     <h5>{{ post.title }}</h5>
     <ul>
+      <li>Автор: <a href="{% url 'users:profile' post.author.username %}">{{ post.author }}</a></li>
       <li>Место: {{ post.location }}</li>
-      <li>Дата: {{ post.date }}</li>
+      <li>Дата: {{ post.pub_date }}</li>
+      {% if not post.is_published %}
+        <span class="badge bg-warning text-dark">Пост снят с публикации администратором</span>
+      {% endif %}
+      {% if post.days_to_publish > 0 %}
+        <span class="badge bg-info text-dark">Дней до публикации: {{ post.days_to_publish }}</span>
+      {% elif post.days_to_publish == 0 %}
+        <span class="badge bg-info text-dark">До публикации меньше 1 дня </span>
+      {% endif %}
       <li>Категория: <a href="{% url 'blog:category_posts' post.category.slug %}">{{ post.category }}</a></li>
+      {% if not post.category.is_published %}
+        <span class="badge bg-warning text-dark">Вся категория снята с публикации администратором</span>
+      {% endif %}
     </ul>
   <p>{{ post.text }}</p>      
   </div> 

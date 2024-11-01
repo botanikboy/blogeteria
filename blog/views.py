@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.views.generic import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+from django.core.exceptions import PermissionDenied
 
 from .forms import PostCreateForm
 from .models import Post, Category
@@ -26,13 +27,23 @@ def index(request):
 
 def post_detail(request, pk):
     post = get_object_or_404(
-        Post.objects.filter(
-            is_published=True,
-            pub_date__lt=timezone.now(),
-            category__is_published=True
-        ).select_related('location', 'category', 'author'),
+        Post.objects.select_related('location', 'category', 'author'),
         pk=pk
     )
+    if request.user != post.author and (
+        not post.is_published
+        or not post.category.is_published
+        or post.pub_date > timezone.now()
+    ):
+        raise PermissionDenied
+    # post = get_object_or_404(
+    #     Post.objects.filter(
+    #         is_published=True,
+    #         pub_date__lt=timezone.now(),
+    #         category__is_published=True
+    #     ).select_related('location', 'category', 'author'),
+    #     pk=pk
+    # )
     context = {'post': post}
     return render(request, 'blog/detail.html', context)
 
@@ -63,6 +74,7 @@ def category_posts(request, slug):
 class PostCreate(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostCreateForm
+    template_name = 'blog/create_post.html'
 
     def get_success_url(self):
         return reverse_lazy(

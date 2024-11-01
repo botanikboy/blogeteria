@@ -34,7 +34,12 @@ Blogeteria. Пост {{ post.date }}
         height="700" width="700"
         src="{{ post.image.url }}"
         >
-  {% endif %}  
+  {% endif %}
   </div>
+  {% if user.is_authenticated and post.author == request.user %}
+    <a class="btn btn-outline-primary mt-1" href="{% url 'blog:post_edit' post.id %}">
+      Редактировать пост
+    </a>
+  {% endif %}
 </div>     
 {% endblock content %}

@@ -8,15 +8,20 @@
       <li>
         Дата публикации: {{ post.pub_date }}
         {% if not post.is_published %}
-          <span class="badge bg-warning text-dark">Снят с публикации администратором</span>
+          <span class="badge bg-warning text-dark">Пост снят с публикации администратором</span>
         {% endif %}
         {% if post.days_to_publish > 0 %}
-          <span class="badge bg-secondary">Дней до публикации: {{ post.days_to_publish }}</span>
+          <span class="badge bg-info text-dark">Дней до публикации: {{ post.days_to_publish }}</span>
         {% elif post.days_to_publish == 0 %}
-          <span class="badge bg-secondary">До публикации меньше 1 дня </span>
+          <span class="badge bg-info text-dark">До публикации меньше 1 дня </span>
         {% endif %}
       </li>
-      <li>Категория: <a href="{% url 'blog:category_posts' post.category.slug %}">{{ post.category }}</a></li>
+      <li>
+        Категория: <a href="{% url 'blog:category_posts' post.category.slug %}">{{ post.category }}</a>
+        {% if not post.category.is_published %}
+          <span class="badge bg-warning text-dark">Вся категория снята с публикации администратором</span>
+        {% endif %}
+      </li>
     </ul>
     <p class="card-text">
         {{ post.text|truncatewords:20 }}

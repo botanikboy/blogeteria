@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils import timezone
 
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from blog.models import Post
@@ -37,8 +38,16 @@ class UserChangeView(LoginRequiredMixin, UpdateView):
 
 def user_profile_view(request, username):
     user = get_object_or_404(User, username=username)
-    posts = Post.objects.filter(
-        author=user).select_related('category', 'location', 'author')
+    if request.user == user:
+        posts = Post.objects.filter(
+            author=user).select_related('category', 'location', 'author')
+    else:
+        posts = Post.objects.filter(
+            author=user,
+            is_published=True,
+            pub_date__lt=timezone.now(),
+            category__is_published=True).select_related(
+                'category', 'location', 'author')
     paginator = Paginator(posts, 9)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)

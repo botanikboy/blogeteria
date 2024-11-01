@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.utils.timezone import now
 
 from core.models import PublishedModel
-from .validators import date_in_future
+
 User = get_user_model()
 
 
@@ -49,8 +49,7 @@ class Post(PublishedModel):
         help_text='Если установить дату и время в будущем — можно делать'
                   ' отложенные публикации.',
         default=now,
-        blank=True, null=True,
-        validators=[date_in_future,])
+        blank=True, null=True)
     author = models.ForeignKey(
         User,
         verbose_name='Автор',

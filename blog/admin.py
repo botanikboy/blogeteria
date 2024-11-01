@@ -28,6 +28,7 @@ class PostAdmin(admin.ModelAdmin):
         'location',
         'category'
     )
+    list_display_links = ('title',)
 
 
 class LocationAdmin(admin.ModelAdmin):

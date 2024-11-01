@@ -14,7 +14,7 @@ def index(request):
         is_published=True,
         pub_date__lt=timezone.now(),
         category__is_published=True
-    ).select_related('category', 'location')
+    ).select_related('category', 'location', 'author')
     paginator = Paginator(posts, 9)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -30,7 +30,7 @@ def post_detail(request, pk):
             is_published=True,
             pub_date__lt=timezone.now(),
             category__is_published=True
-        ).select_related('location', 'category'),
+        ).select_related('location', 'category', 'author'),
         pk=pk
     )
     context = {'post': post}

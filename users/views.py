@@ -38,7 +38,7 @@ class UserChangeView(LoginRequiredMixin, UpdateView):
 def user_profile_view(request, username):
     user = get_object_or_404(User, username=username)
     posts = Post.objects.filter(
-        author=user).select_related('category', 'location')
+        author=user).select_related('category', 'location', 'author')
     paginator = Paginator(posts, 9)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)

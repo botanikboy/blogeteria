@@ -1,12 +1,21 @@
 {% load static %}
-<div class="card h-150 p-0">
-
-  <div class="card-body">     
+<div class="card h-100 d-flex flex-column">
+  <div class="card-body d-flex flex-column flex-grow-1">     
     <h5 class="card-title">{{ post.title }}</h5>
-    {% comment %} ДОБАВИТЬ ПОМЕТКУ ЧТО СНЯТО С ПУБЛИКАЦИИ ИЛИ ЗАПИСЬ С ОТЛОЖЕННОЙ ПУБЛИКАЦИЕЙ {% endcomment %}
     <ul>
+      <li>Автор: <a href="{% url 'users:profile' post.author.username %}">{{ post.author }}</a></li>
       <li>Место: {{ post.location }}</li>
-      <li>Дата: {{ post.pub_date }}</li>
+      <li>
+        Дата публикации: {{ post.pub_date }}
+        {% if not post.is_published %}
+          <span class="badge bg-warning text-dark">Снят с публикации администратором</span>
+        {% endif %}
+        {% if post.days_to_publish > 0 %}
+          <span class="badge bg-secondary">Дней до публикации: {{ post.days_to_publish }}</span>
+        {% elif post.days_to_publish == 0 %}
+          <span class="badge bg-secondary">До публикации меньше 1 дня </span>
+        {% endif %}
+      </li>
       <li>Категория: <a href="{% url 'blog:category_posts' post.category.slug %}">{{ post.category }}</a></li>
     </ul>
     <p class="card-text">
@@ -14,13 +23,13 @@
     </p>
     {% if post.image %}
     <img 
-    class="img-fluid card-img-bottom" 
-    {% comment %} height="200" width="300" {% endcomment %}
-    src="{{ post.image.url }}"
+      class="img-fluid card-img-bottom" 
+      src="{{ post.image.url }}"
+      style="max-height: 200px; object-fit: cover;"
     >
     {% endif %}
   </div>
-  <div class="card-footer">
+  <div class="card-footer mt-auto">
     <a class="mt-3 regular-link" href="{% url 'blog:post_detail' post.id %}">
         Подробнее -->
     </a>

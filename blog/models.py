@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.utils.timezone import now
+from django.utils import timezone
 
 from core.models import PublishedModel
 
@@ -48,7 +48,7 @@ class Post(PublishedModel):
         verbose_name='Дата публикации',
         help_text='Если установить дату и время в будущем — можно делать'
                   ' отложенные публикации.',
-        default=now,
+        default=timezone.now,
         blank=True, null=True)
     author = models.ForeignKey(
         User,
@@ -81,5 +81,12 @@ class Post(PublishedModel):
 
     def save(self, *args, **kwargs):
         if not self.pub_date:
-            self.pub_date = now()
+            self.pub_date = timezone.now()
         super().save(*args, **kwargs)
+
+    @property
+    def days_to_publish(self):
+        time = self.pub_date - timezone.now()
+        if time.days >= 0:
+            return time.days
+        return -1

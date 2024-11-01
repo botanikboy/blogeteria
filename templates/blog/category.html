@@ -5,7 +5,9 @@ Blogeteria. Категория {{ category }}
 {% endblock title %}
 
 {% block content %}
+<div class="row mt-3">
 <h1 class="pb-2 mb-0">Публикации в категории - {{ category }}</h1>
+</div>
 	<div class="row row-cols-1 row-cols-md-3 row-cols-lg-3 g-3">
 		{% for post in page_obj %}
 			{% include "includes/post_card.html" %}

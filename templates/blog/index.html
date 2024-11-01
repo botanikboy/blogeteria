@@ -5,7 +5,9 @@ Blogeteria. Лента записей
 {% endblock title %}
 
 {% block content %}
+<div class="row mt-3">
 <h1 class="pb-2 mb-0">Лента записей</h1>
+</div>
     <div class="row row-cols-1 row-cols-md-3 row-cols-lg-3 g-3">
       {% for post in page_obj %}
         {% include "includes/post_card.html" %}

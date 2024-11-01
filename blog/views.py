@@ -3,9 +3,9 @@ from django.shortcuts import get_list_or_404, get_object_or_404, render
 from django.utils import timezone
 from django.views.generic import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.forms import DateTimeInput
 from django.urls import reverse_lazy
 
+from .forms import PostCreateForm
 from .models import Post, Category
 
 
@@ -62,23 +62,7 @@ def category_posts(request, slug):
 
 class PostCreate(LoginRequiredMixin, CreateView):
     model = Post
-    fields = [
-        'title',
-        'text',
-        'pub_date',
-        'location',
-        'category',
-        'image',
-    ]
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class=None)
-        form.fields['pub_date'].widget = DateTimeInput(
-            attrs={
-                'type': 'datetime-local',
-                'style': 'width:200px',
-            })
-        return form
+    form_class = PostCreateForm
 
     def get_success_url(self):
         return reverse_lazy(

@@ -90,3 +90,34 @@ class Post(PublishedModel):
         if time.days >= 0:
             return time.days
         return -1
+
+
+class Comment(PublishedModel):
+    text = models.TextField('Текст комментария')
+    author = models.ForeignKey(
+        User,
+        verbose_name='Автор',
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
+    is_edited = models.BooleanField(
+        'Отметка о редактировании',
+        default=False,
+    )
+    date_edited = models.DateTimeField(
+        'Время редактирования',
+        auto_now=True
+    )
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
+
+    class Meta:
+        ordering = ('created_at')
+
+    @property
+    def days_from_publish(self):
+        time = self.created_at - timezone.now()
+        return time.days

@@ -77,7 +77,8 @@ class Post(PublishedModel):
         ordering = ('-pub_date',)
 
     def __str__(self) -> str:
-        return f'{self.author}: {self.title}'
+        return (f'{self.author}: {self.title[:10]}'
+                f'{"..." if len(self.title) > 10 else ""}')
 
     def save(self, *args, **kwargs):
         if not self.pub_date:
@@ -120,7 +121,8 @@ class Comment(PublishedModel):
         verbose_name_plural = 'Комментарии'
 
     def __str__(self):
-        return f'{self.author} к посту {self.post} от {self.created_at}'
+        return (f'{self.author} к посту {self.post}'
+                f' от {self.created_at.strftime("%Y-%m-%d %H:%M")}')
 
     @property
     def days_from_publish(self):

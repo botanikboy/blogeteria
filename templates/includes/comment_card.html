@@ -19,7 +19,10 @@
   {{ comment.created_at }}
   {% if user.is_authenticated and comment.author == request.user %}
       <a class="mt-1 regular-link" href="{% url 'blog:comment_edit' post.id comment.id %}">
-      Редактировать
+        Редактировать | 
+      </a>
+      <a class="mt-1 regular-link" href="{% url 'blog:comment_delete' post.id comment.id %}">
+        Удалить
       </a>
   {% endif %}
   </div>

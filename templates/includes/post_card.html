@@ -1,7 +1,17 @@
 {% load static %}
 <div class="card h-100 d-flex flex-column">
   <div class="card-body d-flex flex-column flex-grow-1">     
-    <h5 class="card-title">{{ post.title }}</h5>
+    <div class="card-title">
+      <h5>{{ post.title }}</h5>
+      {% if user.is_authenticated and post.author == request.user %}
+      <a class="mt-1 regular-link" href="{% url 'blog:post_edit' post.id %}">
+        Редактировать |
+      </a>
+      <a class="mt-1 regular-link" href="{% url 'blog:post_delete' post.id %}">
+        Удалить
+      </a>
+    {% endif %}
+    </div>
     {% if not post.category.is_published %}
       <span class="badge bg-warning text-dark w-100 text-wrap">Вся категория снята с публикации администратором</span>
     {% endif %}
@@ -39,10 +49,5 @@
         Подробнее -->
     </a>
     <div class="mt-1">Комментариев: {{ post.comments.count }}</div>
-    {% if user.is_authenticated and post.author == request.user %}
-      <a class="mt-1 regular-link" href="{% url 'blog:post_edit' post.id %}">
-        Редактировать
-      </a>
-    {% endif %}
   </div>
 </div>

@@ -3,9 +3,11 @@
 {% load django_bootstrap5 %}
 {% block title %}
   {% if '/edit' in request.path %}
-  Редактирование записи
+    Редактирование записи
+  {% elif '/delete' in request.path %}
+    Удалить запись
   {% else %}
-  Новая запись
+    Новая запись
   {% endif %}
 {% endblock title %}
 {% block content %}
@@ -13,6 +15,8 @@
   <h2 class="row mt-3">
     {% if '/edit' in request.path %}
       Редактирование записи "{{ data.title }}"
+    {% elif '/delete' in request.path %}
+      Удаление записи {{ post }}
     {% else %}
       Новая запись
     {% endif %}
@@ -20,7 +24,9 @@
   <div class="card col-8">
     <div class="card-header">
       {% if '/edit' in request.path %}
-      Редактирование записи "{{ data.title }}"
+        Редактирование записи "{{ data.title }}"
+      {% elif '/delete' in request.path %}
+        Удалить запись?
       {% else %}
         Новая запись
       {% endif %}
@@ -29,7 +35,17 @@
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {% bootstrap_form form %}
-        {% bootstrap_button button_type="submit" content="Сохранить" %}
+        {% if '/delete' in request.path %}
+          <p class="card-text">
+            <ul>
+              <li>Дата публикации: {{ post.pub_date }}</li>
+              <li>Заголовок: {{ post.title }}</li>
+              <li>Текст: {{ post.text }}</li>
+            </ul>
+            {% bootstrap_button button_type="submit" button_class="btn-danger" content="Удалить" %}
+        {% else %}
+          {% bootstrap_button button_type="submit" content="Сохранить" %}
+        {% endif %}
       </form>
     </div>
   </div>

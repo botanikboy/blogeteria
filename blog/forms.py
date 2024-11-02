@@ -1,6 +1,6 @@
 from django.forms import DateTimeInput, ModelForm
 
-from .models import Post
+from .models import Comment, Post
 from .validators import date_in_future
 
 
@@ -28,3 +28,10 @@ class PostCreateForm(ModelForm):
         if pub_date is not None:
             date_in_future(pub_date)
         return pub_date
+
+
+class CommentCreateForm(ModelForm):
+
+    class Meta:
+        model = Comment
+        fields = ['text']

@@ -115,9 +115,14 @@ class Comment(PublishedModel):
     )
 
     class Meta:
-        ordering = ('created_at')
+        ordering = ('created_at',)
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
+
+    def __str__(self):
+        return f'{self.author} к посту {self.post} от {self.created_at}'
 
     @property
     def days_from_publish(self):
-        time = self.created_at - timezone.now()
+        time = timezone.now() - self.created_at
         return time.days

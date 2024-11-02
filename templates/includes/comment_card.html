@@ -1,0 +1,26 @@
+{% load static %}
+<div class="card h-100 mt-2">
+  <div class="card-body">     
+    <h6 class="card-title"><a href="{% url 'users:profile' comment.author.username %}">{{ comment.author }}</a></h6>
+    {% if comment.days_from_publish > 0 %}
+      <span class="badge bg-light text-dark text-wrap">{{ comment.days_from_publish }} дн. назад</span>
+    {% elif comment.days_from_publish == 0 %}
+      <span class="badge bg-light text-dark text-wrap">меньше 1 дня назад</span>
+    {% endif %}
+    {% if comment.is_edited %}
+      <span class="badge bg-light text-dark text-wrap">отредактирован {{ comment.date_edited }}</span>
+    {% endif %}
+    <ul>
+    <p class="card-text mt-1">
+        {{ comment.text }}
+    </p>
+  </div>
+  <div class="card-footer fw-light">
+  {{ comment.created_at }}
+  {% if user.is_authenticated and comment.author == request.user %}
+      <a class="mt-1 regular-link" href="{% url 'blog:post_edit' post.id %}">
+      Редактировать
+      </a>
+  {% endif %}
+  </div>
+</div>

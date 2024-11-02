@@ -28,7 +28,8 @@ def index(request):
 
 def post_detail(request, pk):
     post = get_object_or_404(
-        Post.objects.select_related('location', 'category', 'author'),
+        Post.objects.select_related(
+            'location', 'category', 'author'),
         pk=pk
     )
     if request.user != post.author and (

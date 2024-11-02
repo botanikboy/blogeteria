@@ -7,7 +7,7 @@ Blogeteria. Пост {{ post.date }}
 {% block content %}
 <div class="row mt-3">
   <div class="col-12 col-md-6">
-    <h5>{{ post.title }}</h5>
+    <h3>{{ post.title }}</h3>
     <ul>
       <li>Автор: <a href="{% url 'users:profile' post.author.username %}">{{ post.author }}</a></li>
       <li>Место: {{ post.location }}</li>
@@ -41,5 +41,8 @@ Blogeteria. Пост {{ post.date }}
       Редактировать пост
     </a>
   {% endif %}
-</div>     
+</div>
+{% for comment in post.comments.all %}
+  {% include "includes/comment_card.html" %}
+{% endfor %}
 {% endblock content %}

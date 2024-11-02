@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.views.generic import CreateView, UpdateView
 
 from .forms import CommentCreateForm, PostCreateForm
-from .models import Category, Post
+from .models import Category, Comment, Post
 
 
 def index(request):
@@ -103,3 +103,27 @@ class PostUpdate(PostMixing, LoginRequiredMixin, UpdateView):
             initial['pub_date'] = self.object.pub_date.strftime(
                 '%Y-%m-%dT%H:%M')
         return initial
+
+
+class CommentCreate(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentCreateForm
+    template_name = 'blog/create_comment.html'
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'blog:post_detail',
+            kwargs={'pk': self.object.post.id}
+        )
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        post = get_object_or_404(Post, pk=self.kwargs['pk'])
+        form.instance.post = post
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        post = get_object_or_404(Post, pk=self.kwargs['pk'])
+        context['post'] = post
+        return context

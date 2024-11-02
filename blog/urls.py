@@ -10,4 +10,10 @@ urlpatterns = [
     path('posts/create/', views.PostCreate.as_view(), name='post_create'),
     path('category/<slug:slug>/', views.category_posts, name='category_posts'),
     path('posts/<int:pk>/edit/', views.PostUpdate.as_view(), name='post_edit'),
-]
+    path(
+        'posts/<int:pk>/comment/',
+        views.CommentCreate.as_view(),
+        name='comment_create'
+    ),
+
+    ]

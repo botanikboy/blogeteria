@@ -43,15 +43,17 @@ Blogeteria. Пост {{ post.date }}
     </a>
   {% endif %}
 </div>
-<div class="card h-100 mt-2">
-  <div class="card-body">
-  <form method="post">
-    {% csrf_token %}
-    {% bootstrap_form form %}
-    {% bootstrap_button button_type="submit" button_class="btn btn-outline-primary" content="Опубликовать комментарий" %}
-  </form>
+{% if user.is_authenticated %}
+  <div class="card h-100 mt-2">
+    <div class="card-body">
+    <form method="post" action="{% url 'blog:comment_create' post.id %}">
+      {% csrf_token %}
+      {% bootstrap_form form %}
+      {% bootstrap_button button_type="submit" button_class="btn btn-outline-primary" content="Опубликовать комментарий" %}
+    </form>
+    </div>
   </div>
-</div>
+{% endif %}
 {% for comment in post.comments.all %}
   {% if comment.is_published %}
     {% include "includes/comment_card.html" %}

@@ -18,7 +18,7 @@
   <div class="card-footer fw-light">
   {{ comment.created_at }}
   {% if user.is_authenticated and comment.author == request.user %}
-      <a class="mt-1 regular-link" href="{% url 'blog:post_edit' post.id %}">
+      <a class="mt-1 regular-link" href="{% url 'blog:comment_edit' post.id comment.id %}">
       Редактировать
       </a>
   {% endif %}

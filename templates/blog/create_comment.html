@@ -11,9 +11,9 @@
 {% block content %}
   <h2 class="row mt-3">
     {% if '/edit' in request.path %}
-      Редактирование комментария к посту - "{{ post }}"
+      Редактирование комментария к посту "{{ post }}"
     {% else %}
-      Новый комментарий к посту - {{ post }}
+      Новый комментарий к посту "{{ post }}"
     {% endif %}
   </h2>
   <div class="card col-8">

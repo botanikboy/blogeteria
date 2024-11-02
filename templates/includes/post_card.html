@@ -38,6 +38,7 @@
     <a class="mt-1 regular-link" href="{% url 'blog:post_detail' post.id %}">
         Подробнее -->
     </a>
+    <div class="mt-1">Комментариев: {{ post.comments.count }}</div>
     {% if user.is_authenticated and post.author == request.user %}
       <a class="mt-1 regular-link" href="{% url 'blog:post_edit' post.id %}">
         Редактировать

@@ -69,13 +69,13 @@ def category_posts(request, slug):
     return render(request, 'blog/category.html', context)
 
 
-class PostMixing():
+class PostMixing(LoginRequiredMixin):
     model = Post
     form_class = PostCreateForm
     template_name = 'blog/create_post.html'
 
 
-class PostCreate(PostMixing, LoginRequiredMixin, CreateView):
+class PostCreate(PostMixing, CreateView):
 
     def get_success_url(self):
         return reverse_lazy(
@@ -86,7 +86,7 @@ class PostCreate(PostMixing, LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class PostUpdate(PostMixing, LoginRequiredMixin, UpdateView):
+class PostUpdate(PostMixing, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         instance = get_object_or_404(Post, pk=kwargs['pk'])
@@ -105,10 +105,13 @@ class PostUpdate(PostMixing, LoginRequiredMixin, UpdateView):
         return initial
 
 
-class CommentCreate(LoginRequiredMixin, CreateView):
+class CommentMixin(LoginRequiredMixin):
     model = Comment
     form_class = CommentCreateForm
     template_name = 'blog/create_comment.html'
+
+
+class CommentCreate(CommentMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy(
@@ -127,3 +130,28 @@ class CommentCreate(LoginRequiredMixin, CreateView):
         post = get_object_or_404(Post, pk=self.kwargs['pk'])
         context['post'] = post
         return context
+
+
+class CommentUpdate(CommentMixin, UpdateView):
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        post = get_object_or_404(Post, pk=self.kwargs['post_pk'])
+        context['post'] = post
+        return context
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'blog:post_detail',
+            kwargs={'pk': self.kwargs['post_pk']}
+        )
+
+    def dispatch(self, request, *args, **kwargs):
+        instance = get_object_or_404(Comment, pk=kwargs['pk'])
+        if instance.author != self.request.user:
+            return redirect('blog:post_detail', pk=self.kwargs['post_pk'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.is_edited = True
+        return super().form_valid(form)

@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, UpdateView
 
-from .forms import PostCreateForm
+from .forms import CommentCreateForm, PostCreateForm
 from .models import Category, Post
 
 
@@ -38,15 +38,11 @@ def post_detail(request, pk):
         or post.pub_date > timezone.now()
     ):
         raise PermissionDenied
-    # post = get_object_or_404(
-    #     Post.objects.filter(
-    #         is_published=True,
-    #         pub_date__lt=timezone.now(),
-    #         category__is_published=True
-    #     ).select_related('location', 'category', 'author'),
-    #     pk=pk
-    # )
-    context = {'post': post}
+    form = CommentCreateForm()
+    context = {
+        'post': post,
+        'form': form,
+    }
     return render(request, 'blog/detail.html', context)
 
 

@@ -1,4 +1,4 @@
-from django.forms import DateTimeInput, ModelForm
+from django.forms import DateTimeInput, ModelForm, Textarea
 
 from .models import Comment, Post
 from .validators import date_in_future
@@ -35,3 +35,7 @@ class CommentCreateForm(ModelForm):
     class Meta:
         model = Comment
         fields = ['text']
+        labels = {'text': ''}
+        widgets = {
+            'text': Textarea({'rows': '4'})
+        }

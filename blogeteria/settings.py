@@ -11,6 +11,8 @@ USE_L10N = True
 
 LOGIN_REDIRECT_URL = 'blog:index'
 
+LOGIN_URL = 'users:login'
+
 AUTH_USER_MODEL = 'users.CustomUser'
 
 CSRF_FAILURE_VIEW = 'core.views.csrf_failure' 

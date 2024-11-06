@@ -8,6 +8,7 @@ handler403 = 'core.views.forbidden'
 handler500 = 'core.views.server_error'
 
 urlpatterns = [
+    path('', include('django.contrib.auth.urls')),
     path('', include('blog.urls', namespace='blog')),
     path('pages/', include('pages.urls', namespace='pages')),
     path('auth/', include('users.urls', namespace='users')),

@@ -11,7 +11,7 @@ USE_L10N = True
 
 LOGIN_REDIRECT_URL = 'blog:index'
 
-LOGIN_URL = 'users:login'
+LOGIN_URL = 'login'
 
 AUTH_USER_MODEL = 'users.CustomUser'
 

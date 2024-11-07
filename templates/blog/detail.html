@@ -21,9 +21,11 @@ Blogeteria. Пост {{ post.date }}
       {% elif post.days_to_publish == 0 %}
         <span class="badge bg-info text-dark">До публикации меньше 1 дня </span>
       {% endif %}
-      <li>Категория: <a href="{% url 'blog:category_posts' post.category.slug %}">{{ post.category }}</a></li>
-      {% if not post.category.is_published %}
-        <span class="badge bg-warning text-dark">Вся категория снята с публикации администратором</span>
+      {% if post.category %}
+        <li>Категория: <a href="{% url 'blog:category_posts' post.category.slug %}">{{ post.category }}</a></li>
+        {% if not post.category.is_published %}
+          <span class="badge bg-warning text-dark">Вся категория снята с публикации администратором</span>
+        {% endif %}
       {% endif %}
     </ul>
   <p>{{ post.text }}</p>      

@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.shortcuts import (get_list_or_404, get_object_or_404, redirect,
                               render)
 from django.urls import reverse_lazy
@@ -13,9 +14,9 @@ from .models import Category, Comment, Post
 
 def index(request):
     posts = Post.objects.filter(
+        Q(category__isnull=True) | Q(category__is_published=True),
         is_published=True,
-        pub_date__lt=timezone.now(),
-        category__is_published=True
+        pub_date__lt=timezone.now()
     ).select_related('category', 'location', 'author')
     paginator = Paginator(posts, 9)
     page_number = request.GET.get('page')
@@ -34,7 +35,7 @@ def post_detail(request, pk):
     )
     if request.user != post.author and (
         not post.is_published
-        or not post.category.is_published
+        or (post.category is not None and not post.category.is_published)
         or post.pub_date > timezone.now()
     ):
         raise PermissionDenied

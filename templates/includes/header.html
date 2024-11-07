@@ -34,7 +34,7 @@
               Наши правила
           </a> 
           </li>
-          {% if not user.is_authenticated %}
+          {% if not request.user.is_authenticated %}
             <li class="nav-item">
               <a class="nav-link{% if view_name == 'login' %} active {% endif %}" href="{% url 'login' %}">Войти</a>
             </li>
@@ -42,16 +42,16 @@
               <a class="nav-link{% if view_name == 'users:registration' %} active {% endif %}" href="{% url 'users:registration' %}">Регистрация</a>
             </li>
           {% else %}
-          <li class="nav-item">
-            <a class="nav-link{% if 'profile' in view_name and request.user.username in request.resolver_match.captured_kwargs.values %} active {% endif %}"
-              href="{% url 'users:profile' request.user.username %}">Профиль: <b>{{ request.user.username }}</b></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'blog:post_create' %}">Новая запись</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
-          </li>
+            <li class="nav-item">
+              <a class="nav-link{% if 'profile' in view_name and request.user.username in request.resolver_match.captured_kwargs.values %} active {% endif %}"
+                href="{% url 'users:profile' request.user.username %}">Профиль: <b>{{ request.user.username }}</b></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'blog:post_create' %}">Новая запись</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+            </li>
           {% endif %}
       </ul>
       {% endwith %}

@@ -63,6 +63,7 @@ class Post(PublishedModel):
         Category,
         verbose_name='Категория',
         null=True,
+        blank=True,
         on_delete=models.SET_NULL)
     image = models.ImageField(
         'Картинка',

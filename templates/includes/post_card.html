@@ -12,7 +12,7 @@
       </a>
     {% endif %}
     </div>
-    {% if not post.category.is_published %}
+    {% if post.category and not post.category.is_published %}
       <span class="badge bg-warning text-dark w-100 text-wrap">Вся категория снята с публикации администратором</span>
     {% endif %}
     {% if not post.is_published %}
@@ -29,9 +29,11 @@
       <li>
         Дата публикации: {{ post.pub_date }}
       </li>
-      <li>
-        Категория: <a href="{% url 'blog:category_posts' post.category.slug %}">{{ post.category }}</a>
-      </li>
+      {% if post.category %}
+        <li>
+          Категория: <a href="{% url 'blog:category_posts' post.category.slug %}">{{ post.category }}</a>
+        </li>
+      {% endif %}
     </ul>
     <p class="card-text">
         {{ post.text|truncatewords:20 }}

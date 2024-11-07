@@ -1,6 +1,4 @@
-from django.contrib.auth.views import PasswordResetView
-from django.urls import reverse_lazy
-from django.urls import include, path
+from django.urls import path
 
 from . import views
 

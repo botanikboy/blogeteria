@@ -39,6 +39,7 @@ class TestRoutes(TestCase):
             ('password_reset', None),
             ('pages:rules', None),
             ('pages:about', None),
+            ('users:profile', {'username': self.author.username}),
         )
         for name, kwargs in urls:
             with self.subTest(name=name):
@@ -54,6 +55,7 @@ class TestRoutes(TestCase):
                                    'post_pk': self.comment.post.pk}),
             ('blog:comment_delete', {'pk': self.comment.pk,
                                      'post_pk': self.comment.post.pk}),
+            ('users:profile_edit', {'pk': self.author.pk}),
         )
         self.client.force_login(self.author)
         for name, kwargs in urls:
@@ -69,4 +71,8 @@ class TestRoutes(TestCase):
                 redirect_url = reverse(
                     'blog:post_detail', kwargs={'pk': self.post.pk})
                 response = self.client.get(url)
-                self.assertRedirects(response, redirect_url)
+                if name == 'users:profile_edit':
+                    self.assertEqual(
+                        response.status_code, HTTPStatus.FORBIDDEN)
+                else:
+                    self.assertRedirects(response, redirect_url)

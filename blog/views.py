@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
+from django.conf import settings
 from django.db.models import Q
 from django.shortcuts import (get_list_or_404, get_object_or_404, redirect,
                               render)
@@ -8,7 +9,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, DeleteView, UpdateView
 
-from .forms import CommentCreateForm, PostCreateForm
+from .forms import CommentCreateForm, PostCreateForm, PostEditForm
 from .models import Category, Comment, Post
 
 
@@ -18,7 +19,7 @@ def index(request):
         is_published=True,
         pub_date__lt=timezone.now()
     ).select_related('category', 'location', 'author')
-    paginator = Paginator(posts, 9)
+    paginator = Paginator(posts, settings.POSTS_ON_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
@@ -42,8 +43,10 @@ def post_detail(request, pk):
     form = CommentCreateForm()
     context = {
         'post': post,
-        'form': form,
     }
+    if not request.user.is_anonymous:
+        form = CommentCreateForm()
+        context['form'] = form
     return render(request, 'blog/detail.html', context)
 
 
@@ -60,7 +63,7 @@ def category_posts(request, slug):
         ).select_related('location', 'category', 'author'),
         category=category
     )
-    paginator = Paginator(posts, 9)
+    paginator = Paginator(posts, settings.POSTS_ON_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
@@ -88,7 +91,7 @@ class PostCreate(PostMixing, CreateView):
 
 
 class PostUpdate(PostMixing, UpdateView):
-    form_class = PostCreateForm
+    form_class = PostEditForm
 
     def dispatch(self, request, *args, **kwargs):
         instance = get_object_or_404(Post, pk=kwargs['pk'])

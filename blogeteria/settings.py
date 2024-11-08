@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+POSTS_ON_PAGE = 9
+
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 USE_L10N = True

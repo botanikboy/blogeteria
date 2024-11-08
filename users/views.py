@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
+from django.conf import settings
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView
@@ -48,7 +49,7 @@ def user_profile_view(request, username):
             pub_date__lt=timezone.now(),
             category__is_published=True).select_related(
                 'category', 'location', 'author')
-    paginator = Paginator(posts, 9)
+    paginator = Paginator(posts, settings.POSTS_ON_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {

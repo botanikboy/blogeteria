@@ -30,6 +30,19 @@ class PostCreateForm(ModelForm):
         return pub_date
 
 
+class PostEditForm(ModelForm):
+
+    class Meta:
+        model = Post
+        fields = [
+            'title',
+            'text',
+            'location',
+            'category',
+            'image',
+        ]
+
+
 class CommentCreateForm(ModelForm):
 
     class Meta:

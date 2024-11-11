@@ -119,18 +119,9 @@ class TestCommentEditDelete(TestCase):
             args=(cls.posts[cls.PUBLISHED_POST].pk,)
         )
 
-    def get_delete_url(self, index: int):
+    def get_url(self, index: int, method: str):
         return reverse(
-            'blog:comment_delete',
-            kwargs={
-                'post_pk': self.posts[index].pk,
-                'pk': self.comments[index].pk,
-            }
-        )
-
-    def get_edit_url(self, index: int):
-        return reverse(
-            'blog:comment_edit',
+            f'blog:comment_{method}',
             kwargs={
                 'post_pk': self.posts[index].pk,
                 'pk': self.comments[index].pk,
@@ -139,7 +130,7 @@ class TestCommentEditDelete(TestCase):
 
     def test_author_can_delete_comment(self):
         response = self.auth_author_client.delete(
-            self.get_delete_url(self.PUBLISHED_POST)
+            self.get_url(self.PUBLISHED_POST, 'delete')
         )
         self.assertRedirects(response, self.redirect_url)
         comments_count = Comment.objects.count()
@@ -147,7 +138,7 @@ class TestCommentEditDelete(TestCase):
 
     def test_not_author_cant_delete_comment(self):
         response = self.auth_reader_client.delete(
-            self.get_delete_url(self.PUBLISHED_POST)
+            self.get_url(self.PUBLISHED_POST, 'delete')
         )
         self.assertRedirects(response, self.redirect_url)
         comments_count = Comment.objects.count()
@@ -155,7 +146,7 @@ class TestCommentEditDelete(TestCase):
 
     def test_author_can_edit_comment(self):
         response = self.auth_author_client.post(
-            self.get_edit_url(self.PUBLISHED_POST),
+            self.get_url(self.PUBLISHED_POST, 'edit'),
             self.form_data
         )
         self.assertRedirects(response, self.redirect_url)
@@ -165,7 +156,7 @@ class TestCommentEditDelete(TestCase):
 
     def test_not_author_cant_edit_comment(self):
         response = self.auth_reader_client.post(
-            self.get_edit_url(self.PUBLISHED_POST),
+            self.get_url(self.PUBLISHED_POST, 'edit'),
             self.form_data
         )
         self.assertRedirects(response, self.redirect_url)
@@ -175,25 +166,25 @@ class TestCommentEditDelete(TestCase):
 
     def test_noone_can_delete_comment_to_hidden(self):
         response = self.auth_author_client.delete(
-            self.get_delete_url(self.UNPUBLISHED_POST))
+            self.get_url(self.UNPUBLISHED_POST, 'delete'))
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_noone_can_edit_comment_to_hidden(self):
         response = self.auth_author_client.post(
-            self.get_edit_url(self.UNPUBLISHED_POST),
+            self.get_url(self.UNPUBLISHED_POST, 'edit'),
             self.form_data
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_noone_can_delete_comment_to_future(self):
         response = self.auth_author_client.delete(
-            self.get_delete_url(self.PUBLISHED_IN_FUTURE_POST)
+            self.get_url(self.PUBLISHED_IN_FUTURE_POST, 'delete')
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_noone_can_edit_comment_to_future(self):
         response = self.auth_author_client.post(
-            self.get_edit_url(self.PUBLISHED_IN_FUTURE_POST),
+            self.get_url(self.PUBLISHED_IN_FUTURE_POST, 'edit'),
             self.form_data
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)

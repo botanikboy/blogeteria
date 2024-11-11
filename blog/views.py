@@ -136,7 +136,11 @@ class CommentCreate(CommentMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        post = get_object_or_404(Post, pk=self.kwargs['pk'])
+        post = get_object_or_404(
+            Post, Q(category__isnull=True) | Q(category__is_published=True),
+            pk=self.kwargs['pk'], is_published=True,
+            pub_date__lt=timezone.now(),
+        )
         form.instance.post = post
         return super().form_valid(form)
 
@@ -163,7 +167,14 @@ class CommentUpdate(CommentMixin, UpdateView):
         )
 
     def dispatch(self, request, *args, **kwargs):
-        instance = get_object_or_404(Comment, pk=kwargs['pk'])
+        instance = get_object_or_404(
+            Comment,
+            Q(post__category__isnull=True) | Q(
+                post__category__is_published=True),
+            pk=kwargs['pk'],
+            post__is_published=True,
+            post__pub_date__lt=timezone.now(),
+        )
         if instance.author != self.request.user:
             return redirect('blog:post_detail', pk=self.kwargs['post_pk'])
         return super().dispatch(request, *args, **kwargs)
@@ -176,7 +187,14 @@ class CommentUpdate(CommentMixin, UpdateView):
 class CommentDelete(CommentMixin, DeleteView):
 
     def dispatch(self, request, *args, **kwargs):
-        instance = get_object_or_404(Comment, pk=kwargs['pk'])
+        instance = get_object_or_404(
+            Comment,
+            Q(post__category__isnull=True) | Q(
+                post__category__is_published=True),
+            pk=kwargs['pk'],
+            post__is_published=True,
+            post__pub_date__lt=timezone.now(),
+        )
         if instance.author != self.request.user:
             return redirect('blog:post_detail', pk=self.kwargs['post_pk'])
         return super().dispatch(request, *args, **kwargs)

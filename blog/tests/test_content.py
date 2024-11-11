@@ -125,7 +125,7 @@ class TestContent(TestCase):
             self.assertIn(
                 self.posts[self.PUBLISHED_IN_FUTURE_POST], object_list)
 
-    def test_anonimous_user_no_hiden_or_future_post_page(self):
+    def test_anonimous_user_no_hiden_or_future_post(self):
         names_kwargs = (
             ('unpublished', {'pk': self.posts[self.UNPUBLISHED_POST].pk}),
             ('future', {'pk': self.posts[self.PUBLISHED_IN_FUTURE_POST].pk}),

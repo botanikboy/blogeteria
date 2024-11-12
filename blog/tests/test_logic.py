@@ -194,7 +194,7 @@ class TestCommentEditDelete(TestCase):
 class TestPostCreate(TestCase):
     POST_TITLE = 'title'
     POST_TEXT = 'text'
-    PUB_DATE_PAST = timezone.now() + timedelta(days=2)
+    PUB_DATE_FUTURE = timezone.now() + timedelta(days=2)
     IMAGE = SimpleUploadedFile(
         name='test_img.jpg',
         content=b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\x00'
@@ -217,13 +217,13 @@ class TestPostCreate(TestCase):
         cls.form_data = {
             'title': cls.POST_TITLE,
             'text': cls.POST_TEXT,
-            'pub_date': cls.PUB_DATE_PAST,
+            'pub_date': cls.PUB_DATE_FUTURE.strftime('%Y-%m-%dT%H:%M'),
             'category': cls.category.pk,
             'location': cls.location.pk,
             'image': cls.IMAGE,
         }
 
-    def test_uth_user_can_create_post(self):
+    def test_auth_user_can_create_post(self):
         response = self.auth_client.post(
             reverse('blog:post_create'), self.form_data)
         self.assertRedirects(
@@ -235,7 +235,7 @@ class TestPostCreate(TestCase):
         self.assertEqual(post.location, self.location)
         self.assertEqual(post.author, self.author)
         self.assertEqual(post.is_published, True)
-        self.assertEqual(post.pub_date.date(), self.PUB_DATE_PAST.date())
+        self.assertEqual(post.pub_date.date(), self.PUB_DATE_FUTURE.date())
         self.assertEqual(post.image.read(), self.IMAGE.read())
 
     def test_anon_cant_create_post(self):
@@ -249,8 +249,8 @@ class TestPostEditDelete(TestCase):
     POST_TEXT = 'text'
     PUB_DATE_PAST = timezone.now() - timedelta(days=1)
     PUB_DATE_FUTURE = timezone.now() + timedelta(days=1)
-    NEW_POST_TITLE = 'title'
-    NEW_POST_TEXT = 'text'
+    NEW_POST_TITLE = 'new title'
+    NEW_POST_TEXT = 'new text'
     NEW_PUB_DATE = timezone.now() + timedelta(days=10)
 
     @classmethod
@@ -271,7 +271,7 @@ class TestPostEditDelete(TestCase):
         cls.form_data = {
             'title': cls.NEW_POST_TITLE,
             'text': cls.NEW_POST_TEXT,
-            'pub_date': cls.NEW_PUB_DATE,
+            'pub_date': cls.NEW_PUB_DATE.strftime('%Y-%m-%dT%H:%M'),
         }
         cls.post_published = Post.objects.create(
             title=cls.POST_TITLE,
@@ -310,10 +310,15 @@ class TestPostEditDelete(TestCase):
             reverse('blog:post_edit', args=(self.post_future.pk,)),
             self.form_data
         )
-        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertRedirects(
+            response,
+            reverse('blog:post_detail', args=(self.post_future.pk,))
+        )
+        self.post_future.refresh_from_db()
         self.assertEqual(self.post_future.title, self.NEW_POST_TITLE)
         self.assertEqual(self.post_future.text, self.NEW_POST_TEXT)
-        self.assertEqual(self.post_future.pub_date, self.NEW_PUB_DATE)
+        self.assertEqual(
+            self.post_future.pub_date.date(), self.NEW_PUB_DATE.date())
 
     def test_reader_cant_edit_post(self):
         response = self.auth_reader_client.post(
@@ -324,6 +329,7 @@ class TestPostEditDelete(TestCase):
             response,
             reverse('blog:post_detail', args=(self.post_published.pk,))
         )
+        self.post_published.refresh_from_db()
         self.assertEqual(self.post_published.title, self.POST_TITLE)
         self.assertEqual(self.post_published.text, self.POST_TEXT)
 
@@ -332,9 +338,12 @@ class TestPostEditDelete(TestCase):
             reverse('blog:post_edit', args=(self.post_published.pk,)),
             self.form_data
         )
-        self.assertFormError(
+        self.assertRedirects(
             response,
-            form='form',
-            field='pub_date',
-            errors='пост уже опубликован'
+            reverse('blog:post_detail', args=(self.post_published.pk,))
         )
+        self.post_published.refresh_from_db()
+        self.assertEqual(self.post_published.title, self.NEW_POST_TITLE)
+        self.assertEqual(self.post_published.text, self.NEW_POST_TEXT)
+        self.assertEqual(
+            self.post_published.pub_date.date(), self.PUB_DATE_PAST.date())

@@ -1,11 +1,11 @@
 from django.forms import DateTimeInput, ModelForm, Textarea
+from django.utils import timezone
 
 from .models import Comment, Post
 from .validators import date_in_future
 
 
-class PostCreateForm(ModelForm):
-
+class PostForm(ModelForm):
     class Meta:
         model = Post
         fields = [
@@ -23,24 +23,22 @@ class PostCreateForm(ModelForm):
             })
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if all((
+            self.instance,
+            self.instance.pub_date,
+            self.instance.pub_date < timezone.now()
+        )):
+            self.fields['pub_date'].disabled = True
+
     def clean_pub_date(self):
         pub_date = self.cleaned_data['pub_date']
+        if self.fields['pub_date'].disabled:
+            return pub_date
         if pub_date is not None:
             date_in_future(pub_date)
         return pub_date
-
-
-class PostEditForm(ModelForm):
-
-    class Meta:
-        model = Post
-        fields = [
-            'title',
-            'text',
-            'location',
-            'category',
-            'image',
-        ]
 
 
 class CommentCreateForm(ModelForm):

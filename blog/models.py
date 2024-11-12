@@ -58,6 +58,7 @@ class Post(PublishedModel):
         Location,
         verbose_name='Место',
         null=True,
+        blank=True,
         on_delete=models.SET_NULL)
     category = models.ForeignKey(
         Category,

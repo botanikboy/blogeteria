@@ -9,7 +9,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, DeleteView, UpdateView
 
-from .forms import CommentCreateForm, PostCreateForm, PostEditForm
+from .forms import CommentCreateForm, PostForm
 from .models import Category, Comment, Post
 
 
@@ -79,7 +79,7 @@ class PostMixing(LoginRequiredMixin):
 
 
 class PostCreate(PostMixing, CreateView):
-    form_class = PostCreateForm
+    form_class = PostForm
 
     def get_success_url(self):
         return reverse_lazy(
@@ -91,7 +91,7 @@ class PostCreate(PostMixing, CreateView):
 
 
 class PostUpdate(PostMixing, UpdateView):
-    form_class = PostEditForm
+    form_class = PostForm
 
     def dispatch(self, request, *args, **kwargs):
         instance = get_object_or_404(Post, pk=kwargs['pk'])

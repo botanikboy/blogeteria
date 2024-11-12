@@ -3,10 +3,11 @@ from http import HTTPStatus
 
 from django.utils import timezone
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from blog.models import Comment, Post
+from blog.models import Category, Comment, Location, Post
 
 User = get_user_model()
 
@@ -119,9 +120,9 @@ class TestCommentEditDelete(TestCase):
             args=(cls.posts[cls.PUBLISHED_POST].pk,)
         )
 
-    def get_url(self, index: int, method: str):
+    def get_url(self, index: int, operation: str):
         return reverse(
-            f'blog:comment_{method}',
+            f'blog:comment_{operation}',
             kwargs={
                 'post_pk': self.posts[index].pk,
                 'pk': self.comments[index].pk,
@@ -188,3 +189,81 @@ class TestCommentEditDelete(TestCase):
             self.form_data
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+
+class TestPostCreate(TestCase):
+    POST_TITLE = 'title'
+    POST_TEXT = 'text'
+    PUB_DATE = timezone.now() + timedelta(days=2)
+    IMAGE = SimpleUploadedFile(
+        name='test_img.jpg',
+        content=b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\x00'
+                b'\x00\x00\xff\xff\xff\x21\xf9\x04\x01\x0a\x00\x01\x00\x2c\x00'
+                b'\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b',
+        content_type='image/jpeg'
+    )
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.author = User.objects.create(username='author')
+        cls.auth_client = Client()
+        cls.auth_client.force_login(cls.author)
+        cls.category = Category.objects.create(
+            title='category1',
+            description='desc',
+            slug='slug',
+            )
+        cls.location = Location.objects.create(name='place')
+        cls.form_data = {
+            'title': cls.POST_TITLE,
+            'text': cls.POST_TEXT,
+            'pub_date': cls.PUB_DATE,
+            'category': cls.category.pk,
+            'location': cls.location.pk,
+            'image': cls.IMAGE,
+        }
+
+    def test_uth_user_can_create_post(self):
+        response = self.auth_client.post(
+            reverse('blog:post_create'), self.form_data)
+        self.assertRedirects(
+            response, reverse('users:profile', args=(self.author.username,)))
+        post = Post.objects.get()
+        self.assertEqual(post.title, self.POST_TITLE)
+        self.assertEqual(post.text, self.POST_TEXT)
+        self.assertEqual(post.category, self.category)
+        self.assertEqual(post.location, self.location)
+        self.assertEqual(post.author, self.author)
+        self.assertEqual(post.is_published, True)
+        self.assertEqual(post.pub_date.date(), self.PUB_DATE.date())
+        self.assertEqual(post.image.read(), self.IMAGE.read())
+
+    def test_anon_cant_create_post(self):
+        self.client.post(reverse('blog:post_create'), self.form_data)
+        posts_count = Post.objects.count()
+        self.assertEqual(posts_count, 0)
+
+
+class TestPostEditDelete(TestCase):
+    POST_TITLE = 'title'
+    POST_TEXT = 'text'
+    PUB_DATE = timezone.now() + timedelta(days=2)
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.author = User.objects.create(username='author')
+        cls.auth_author_client = Client()
+        cls.auth_author_client.force_login(cls.author)
+        cls.category = Category.objects.create(
+            title='category1',
+            description='desc',
+            slug='slug'
+            )
+        cls.location = Location.objects.create(name='place')
+        cls.form_data = {
+            'title': cls.POST_TITLE,
+            'text': cls.POST_TEXT,
+            'pub_date': cls.PUB_DATE,
+            'category': cls.category.pk,
+            'location': cls.location.pk,
+        }

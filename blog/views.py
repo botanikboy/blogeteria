@@ -18,7 +18,8 @@ def index(request):
         Q(category__isnull=True) | Q(category__is_published=True),
         is_published=True,
         pub_date__lt=timezone.now()
-    ).select_related('category', 'location', 'author')
+    ).select_related('category', 'location', 'author'
+                     ).prefetch_related('comments')
     paginator = Paginator(posts, settings.POSTS_ON_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -30,8 +31,8 @@ def index(request):
 
 def post_detail(request, pk):
     post = get_object_or_404(
-        Post.objects.select_related(
-            'location', 'category', 'author'),
+        Post.objects.select_related('location', 'category', 'author')
+        .prefetch_related('comments', 'comments__author'),
         pk=pk
     )
     if request.user != post.author and (
@@ -60,7 +61,8 @@ def category_posts(request, slug):
             is_published=True,
             pub_date__lt=timezone.now(),
             category__is_published=True
-        ).select_related('location', 'category', 'author'),
+        ).select_related('location', 'category', 'author'
+                         ).prefetch_related('comments'),
         category=category
     )
     paginator = Paginator(posts, settings.POSTS_ON_PAGE)

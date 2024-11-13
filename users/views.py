@@ -41,14 +41,16 @@ def user_profile_view(request, username):
     user = get_object_or_404(User, username=username)
     if request.user == user:
         posts = Post.objects.filter(
-            author=user).select_related('category', 'location', 'author')
+            author=user).select_related('category', 'location', 'author'
+                                        ).prefetch_related('comments')
     else:
         posts = Post.objects.filter(
             author=user,
             is_published=True,
             pub_date__lt=timezone.now(),
             category__is_published=True).select_related(
-                'category', 'location', 'author')
+                'category', 'location', 'author'
+                ).prefetch_related('comments')
     paginator = Paginator(posts, settings.POSTS_ON_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)

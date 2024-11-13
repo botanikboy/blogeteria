@@ -57,7 +57,8 @@ class TestCommentCreation(TestCase):
         self.assertEqual(comm_count, 0)
 
     def test_auth_user_can_create_comment(self):
-        self.auth_client.post(self.published_url, self.form_data)
+        response = self.auth_client.post(self.published_url, self.form_data)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
         comment = Comment.objects.get()
         self.assertEqual(comment.text, self.COMMENT_TEXT)
         self.assertEqual(comment.post, self.posts[self.PUBLISHED_POST])
@@ -130,9 +131,8 @@ class TestCommentEditDelete(TestCase):
         )
 
     def test_author_can_delete_comment(self):
-        response = self.auth_author_client.delete(
-            self.get_url(self.PUBLISHED_POST, 'delete')
-        )
+        url = self.get_url(self.PUBLISHED_POST, 'delete')
+        response = self.auth_author_client.delete(url)
         self.assertRedirects(response, self.redirect_url)
         comments_count = Comment.objects.count()
         self.assertEqual(comments_count, self.TEST_POSTS_COUNT - 1)

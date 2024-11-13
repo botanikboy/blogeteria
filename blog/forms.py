@@ -27,6 +27,7 @@ class PostForm(ModelForm):
         super().__init__(*args, **kwargs)
         if all((
             self.instance,
+            self.instance.pk,
             self.instance.pub_date,
             self.instance.pub_date < timezone.now()
         )):

@@ -33,6 +33,8 @@ class TestCommentCreation(TestCase):
                 pub_date=timezone.now() - timedelta(days=index)
             ) for index in range(cls.TEST_POSTS_COUNT)
         )
+        cls.posts[cls.PUBLISHED_POST].is_published = True
+        cls.posts[cls.PUBLISHED_POST].save()
         cls.posts[cls.UNPUBLISHED_POST].is_published = False
         cls.posts[cls.UNPUBLISHED_POST].save()
         cls.posts[cls.PUBLISHED_IN_FUTURE_POST].pub_date = (
@@ -111,6 +113,7 @@ class TestCommentEditDelete(TestCase):
         )
         for delta, comment in enumerate(cls.comments):
             comment.created_at = timezone.now() - timedelta(days=delta)
+            comment.save()
         cls.auth_reader_client = Client()
         cls.auth_reader_client.force_login(cls.reader)
         cls.auth_author_client = Client()

@@ -141,7 +141,7 @@ class CommentCreate(CommentMixin, CreateView):
         post = get_object_or_404(
             Post, Q(category__isnull=True) | Q(category__is_published=True),
             pk=self.kwargs['pk'], is_published=True,
-            pub_date__lt=timezone.now(),
+            pub_date__lte=timezone.now(),
         )
         form.instance.post = post
         return super().form_valid(form)
@@ -175,7 +175,7 @@ class CommentUpdate(CommentMixin, UpdateView):
                 post__category__is_published=True),
             pk=kwargs['pk'],
             post__is_published=True,
-            post__pub_date__lt=timezone.now(),
+            post__pub_date__lte=timezone.now(),
         )
         if instance.author != self.request.user:
             return redirect('blog:post_detail', pk=self.kwargs['post_pk'])
@@ -195,7 +195,7 @@ class CommentDelete(CommentMixin, DeleteView):
                 post__category__is_published=True),
             pk=kwargs['pk'],
             post__is_published=True,
-            post__pub_date__lt=timezone.now(),
+            post__pub_date__lte=timezone.now(),
         )
         if instance.author != self.request.user:
             return redirect('blog:post_detail', pk=self.kwargs['post_pk'])

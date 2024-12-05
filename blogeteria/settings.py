@@ -17,7 +17,7 @@ LOGIN_URL = 'login'
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
-CSRF_FAILURE_VIEW = 'core.views.csrf_failure' 
+CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'debug_toolbar'
+    'debug_toolbar',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

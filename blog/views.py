@@ -8,9 +8,13 @@ from django.shortcuts import (get_list_or_404, get_object_or_404, redirect,
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, DeleteView, UpdateView
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
 
 from .forms import CommentCreateForm, PostForm
 from .models import Category, Comment, Post
+from .serializers import PostSerializer
 
 
 def index(request):
@@ -206,3 +210,38 @@ class CommentDelete(CommentMixin, DeleteView):
             'blog:post_detail',
             kwargs={'pk': self.kwargs['post_pk']}
         )
+
+
+@api_view(['GET', 'POST'])
+def api_post(request):
+    if request.method == 'POST':
+        serializer = PostSerializer(data=request.data, many=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    posts = Post.objects.all()
+    return Response(
+        PostSerializer(posts, many=True).data,
+        status=status.HTTP_200_OK
+    )
+
+
+@api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
+def api_post_detail(request, pk):
+    post = get_list_or_404(Post, pk=pk)
+
+    if request.method == 'DELETE':
+        post.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    if request.method in ['PUT', 'PATCH']:
+        serializer = PostSerializer(post, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = PostSerializer(post)
+    return Response(serializer.data, status=status.HTTP_200_OK)

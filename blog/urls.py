@@ -30,4 +30,6 @@ urlpatterns = [
         views.CommentDelete.as_view(),
         name='comment_delete'
     ),
-    ]
+    path('api/v1/posts/', views.api_post),
+    path('api/v1/posts/<int:pk>/', views.api_post_detail),
+]

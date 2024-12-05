@@ -11,6 +11,9 @@ from django.views.generic import CreateView, DeleteView, UpdateView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.generics import (ListCreateAPIView,
+                                     RetrieveUpdateDestroyAPIView)
+from rest_framework.viewsets import ModelViewSet
 
 from .forms import CommentCreateForm, PostForm
 from .models import Category, Comment, Post
@@ -245,3 +248,18 @@ def api_post_detail(request, pk):
 
     serializer = PostSerializer(post)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class APIPostList(ListCreateAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+
+class APIPostDetail(RetrieveUpdateDestroyAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+
+class PostViewSet(ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer

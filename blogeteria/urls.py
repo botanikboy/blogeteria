@@ -13,6 +13,8 @@ urlpatterns = [
     path('pages/', include('pages.urls', namespace='pages')),
     path('auth/', include('users.urls', namespace='users')),
     path('admin/', admin.site.urls),
+    path('auth/', include('djoser.urls')),
+    path('auth/', include('djoser.urls.jwt')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

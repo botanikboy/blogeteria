@@ -1,12 +1,8 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 
 from . import views
 
 app_name = 'blog'
-
-router = DefaultRouter()
-router.register('api/v2/posts', views.PostViewSet)
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -34,7 +30,4 @@ urlpatterns = [
         views.CommentDelete.as_view(),
         name='comment_delete'
     ),
-    path('api/v1/posts/', views.APIPostList.as_view()),
-    path('api/v1/posts/<int:pk>/', views.APIPostDetail.as_view()),
-    path('', include(router.urls))
 ]

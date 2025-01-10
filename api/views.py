@@ -1,61 +1,40 @@
 from django.shortcuts import get_list_or_404
-from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.generics import (ListCreateAPIView,
-                                     RetrieveUpdateDestroyAPIView)
-from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.exceptions import NotFound
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 
-from blog.models import Post
+from blog.models import Post, Category, Comment
 
-from .serializers import PostSerializer
+from .permissions import IsAuthor
+from .serializers import CategorySerializer, PostSerializer, CommentSerializer
 
 
 class PostViewSet(ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    permission_classes = (IsAuthor,)
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
 
-@api_view(['GET', 'POST'])
-def api_post(request):
-    if request.method == 'POST':
-        serializer = PostSerializer(data=request.data, many=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    posts = Post.objects.all()
-    return Response(
-        PostSerializer(posts, many=True).data,
-        status=status.HTTP_200_OK
-    )
+class CategoryViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
 
 
-@api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
-def api_post_detail(request, pk):
-    post = get_list_or_404(Post, pk=pk)
+class CommentVeiwSet(ModelViewSet):
+    serializer_class = CommentSerializer
+    permission_classes = (IsAuthor,)
 
-    if request.method == 'DELETE':
-        post.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def get_queryset(self):
+        post_id = self.kwargs.get('post_id')
+        if not Post.objects.filter(pk=post_id):
+            raise NotFound('No such post.')
+        return Comment.objects.filter(post=post_id)
 
-    if request.method in ['PUT', 'PATCH']:
-        serializer = PostSerializer(post, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    serializer = PostSerializer(post)
-    return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class APIPostList(ListCreateAPIView):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
-
-
-class APIPostDetail(RetrieveUpdateDestroyAPIView):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
+    def perform_create(self, serializer):
+        serializer.save(
+            author=self.request.user,
+            post_id=self.kwargs.get('post_id')
+        )

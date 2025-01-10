@@ -7,9 +7,13 @@ app_name = 'api'
 
 router = DefaultRouter()
 router.register('v2/posts', views.PostViewSet)
+router.register('v2/categories', views.CategoryViewSet)
+router.register(
+    r'v2/posts/(?P<post_id>[\d]+)/comments(?P<comment_id>[\d]*)',
+    views.CommentVeiwSet,
+    basename='Comment'
+)
 
 urlpatterns = [
-    path('v1/posts/', views.APIPostList.as_view()),
-    path('v1/posts/<int:pk>/', views.APIPostDetail.as_view()),
     path('', include(router.urls)),
 ]

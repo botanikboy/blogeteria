@@ -49,6 +49,9 @@ python manage.py runserver
 ## Stack
 - [Python](https://www.python.org/)
 - [Django](https://www.djangoproject.com/)
+- [DRF] (https://www.django-rest-framework.org/)
+- [Djoser] (https://djoser.readthedocs.io/en/latest/getting_started.html)
+- [Simple JWT] (https://django-rest-framework-simplejwt.readthedocs.io/en/latest/)
 - [Bootstrap5](https://getbootstrap.com/docs/5.0/getting-started/introduction/)
 - [Unittest](https://docs.python.org/3/library/unittest.html)
 

@@ -1,4 +1,3 @@
-from django.shortcuts import get_list_or_404
 from rest_framework.exceptions import NotFound
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
@@ -29,12 +28,26 @@ class CommentVeiwSet(ModelViewSet):
 
     def get_queryset(self):
         post_id = self.kwargs.get('post_id')
-        if not Post.objects.filter(pk=post_id):
-            raise NotFound('No such post.')
+        self._validate_post(post_id)
         return Comment.objects.filter(post=post_id)
 
     def perform_create(self, serializer):
+        post_id = self.kwargs.get('post_id')
+        self._validate_post(post_id)
         serializer.save(
             author=self.request.user,
-            post_id=self.kwargs.get('post_id')
+            post_id=post_id
         )
+
+    def perform_update(self, serializer):
+        post_id = self.kwargs.get('post_id')
+        self._validate_post(post_id)
+        serializer.save(
+            author=self.request.user,
+            post_id=post_id,
+            is_edited=True
+        )
+
+    def _validate_post(self, post_id):
+        if not Post.objects.filter(pk=post_id):
+            raise NotFound('No such post.')

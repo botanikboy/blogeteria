@@ -4,7 +4,6 @@ from blog.models import Category, Post, Comment
 
 
 class PostSerializer(serializers.ModelSerializer):
-    author = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Post
@@ -38,5 +37,5 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('id', 'author', 'text', 'created_at', 'post')
-        read_only_fields = ('author', 'post', 'created')
+        fields = ('id', 'author', 'text', 'created_at', 'post', 'is_edited')
+        read_only_fields = ('author', 'post', 'created_at', 'is_edited')

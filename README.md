@@ -7,6 +7,7 @@ Features:
 - comments
 - delayed publications
 - admin hiding posts or categories checkbox
+- basic API CRUDE endpoints and logic documented both in swagger and redoc
 
 ## Launch in dev-mode instructions
 Clone the repo and create .env file (see [.env.example](.env.example))
@@ -52,6 +53,7 @@ python manage.py runserver
 - [DRF](https://www.django-rest-framework.org/)
 - [Djoser](https://djoser.readthedocs.io/en/latest/getting_started.html)
 - [Simple JWT](https://django-rest-framework-simplejwt.readthedocs.io/en/latest/)
+- [Swagger](https://swagger.io/)
 - [Bootstrap5](https://getbootstrap.com/docs/5.0/getting-started/introduction/)
 - [Unittest](https://docs.python.org/3/library/unittest.html)
 

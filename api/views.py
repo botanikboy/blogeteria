@@ -1,6 +1,7 @@
 from rest_framework.exceptions import NotFound
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from blog.models import Post, Category, Comment
 
@@ -11,7 +12,7 @@ from .serializers import CategorySerializer, PostSerializer, CommentSerializer
 class PostViewSet(ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = (IsAuthor,)
+    permission_classes = (IsAuthor, IsAuthenticatedOrReadOnly)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
